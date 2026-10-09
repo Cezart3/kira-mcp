@@ -349,7 +349,14 @@ def has_house_number(street: str) -> bool:
 
 _SHORT_STAY = re.compile(
     r"regim hotelier|pe noapte|/\s*noapte|/\s*zi\b|pe zi\b|nightly|"
-    r"cazare (?:muncitori|in regim)|zilnic\b|saptamanal|pe termen scurt"
+    r"cazare (?:muncitori|in regim)|pe termen scurt|"
+    # 'zilnic' alone is agency boilerplate ("oferte noi zilnic"); needs a rental word
+    r"(?:inchiri\w*|chiri\w*|regim|tarif\w*) (?:zilnic|saptamanal)"
+)
+# "regim hotelier sau pe termen lung", "se poate inchiria si in regim hotelier"
+_ALSO_LONG_TERM = re.compile(
+    r"(?:termen|durata|perioada) (?:lung|indelungat)|pe termen nedeterminat|"
+    r"si (?:in )?regim hotelier|(?:sau|cat si) (?:pe )?(?:termen lung|luna|lunar)"
 )
 _SALE_AD = re.compile(r"\bde vanzare\b|\bvand\b|\bvindem\b")
 NEGOTIABLE = re.compile(r"\bnegocia")  # \b keeps "nenegociabil" out
@@ -361,6 +368,7 @@ def drop_reason(title: str, full_text: str) -> str | None:
         return "parking-only"
     if _SALE_AD.search(fold(title)):
         return "sale-ad"
-    if _SHORT_STAY.search(fold(full_text)):
+    text = fold(full_text)
+    if _SHORT_STAY.search(text) and not _ALSO_LONG_TERM.search(text):
         return "short-stay"
     return None

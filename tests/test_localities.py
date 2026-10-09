@@ -60,3 +60,8 @@ def test_text_helpers():
     assert slugify("Târgu Mureș") == "targu-mures"
     out = redact_personal("Sunati la 0740 123 456 sau +40 264 123 456, mail a.b@x.ro")
     assert "0740" not in out and "264" not in out and "@" not in out
+    for phone in ("0756 // 33 // 44 // 31", "0740.123.456", "(0740) 123-456", "+40 740 123 456"):
+        out = redact_personal(f"tel {phone} ok")
+        assert "[contact pe site]" in out and not any(d in out for d in "1234567"), phone
+    facts = "2 camere, 54 mp, 450 euro, etaj 3/4, an 2019, tel. in anunt"
+    assert redact_personal(facts) == facts

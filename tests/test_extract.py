@@ -193,3 +193,10 @@ def test_drop_reason():
     assert drop_reason("De vanzare apartament 2 camere", "") == "sale-ad"
     assert drop_reason("Apartament centru", "regim hotelier, 150 lei pe noapte") == "short-stay"
     assert drop_reason("Apartament 2 camere", "contract minim 1 an") is None
+    assert drop_reason("Apartament", "inchiriere zilnica sau saptamanala") == "short-stay"
+    for both in ("inchiriez in regim hotelier sau pe durata lunga",
+                 "se poate inchiria si in regim hotelier",
+                 "regim hotelier sau pe termen lung"):
+        assert drop_reason("Apartament 2 camere", both) is None, both
+    # agency boilerplate, not a short stay
+    assert drop_reason("Apartament 2 camere", "cod oferta p9738 zilnic, oferte noi") is None

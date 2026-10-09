@@ -38,8 +38,10 @@ def slugify(s: str, sep: str = "-") -> str:
 # Results carry the rental facts and a link to the original ad. Contact details
 # stay on the source site: phone numbers and emails are stripped from any text
 # we return.
-_PHONE_RE = re.compile(r"(?<!\d)(?:\+?40|0)\s?7\d(?:[\s.\-]?\d){7}(?!\d)")
-_PHONE_LANDLINE_RE = re.compile(r"(?<!\d)(?:\+?40|0)\s?(?:2|3)\d(?:[\s.\-]?\d){7}(?!\d)")
+# separators people use to dodge scrapers: "0756 // 33 // 44 // 31", "0740.123.456"
+_SEP = r"[\s./\\()\-]{0,4}"
+_PHONE_RE = re.compile(rf"(?<!\d)(?:\+?40|0){_SEP}7(?:{_SEP}\d){{8}}(?!\d)")
+_PHONE_LANDLINE_RE = re.compile(rf"(?<!\d)(?:\+?40|0){_SEP}[23](?:{_SEP}\d){{8}}(?!\d)")
 _EMAIL_RE = re.compile(r"\b[\w.+-]+@[\w-]+\.[\w.-]+\b")
 _REDACT = "[contact pe site]"
 
