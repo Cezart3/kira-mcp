@@ -17,7 +17,7 @@ from kira_mcp.extract import find_price_text
 from kira_mcp.http import session
 from kira_mcp.localities import Locality
 from kira_mcp.sites.base import Filters, RawListing, SiteResult, status_for
-from kira_mcp.text import fold, squash_ws
+from kira_mcp.text import fold, squash_ws, strip_html
 
 BASE = "https://www.publi24.ro"
 _LOCATION_ICON = r'use[href="#svg-icon-location"], use[xlink\:href="#svg-icon-location"]'
@@ -137,11 +137,11 @@ class Publi24:
             return item
         if isinstance(d, list):
             d = next((x for x in d if isinstance(x, dict) and x.get("description")), {})
-        desc = squash_ws(str(d.get("description") or ""))
+        desc = strip_html(str(d.get("description") or ""))  # ld+json text is HTML-escaped
         if len(desc) > len(item.description):
             item.description = desc
         if not item.title:
-            item.title = squash_ws(str(d.get("name") or ""))
+            item.title = strip_html(str(d.get("name") or ""))
         images = [
             im.get("contentUrl") for im in d.get("image") or [] if isinstance(im, dict)
         ]

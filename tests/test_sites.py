@@ -52,3 +52,12 @@ def test_lajumate_seller_type():
     assert Lajumate().to_raw(ad).private_owner is True
     ad["fields"][0]["value"] = "Persoană juridică"
     assert Lajumate().to_raw(ad).private_owner is False
+
+
+def test_publi24_ld_json_text_is_unescaped(monkeypatch):
+    ld = {"name": "&#206;nchiriez apartament", "description": "Ofer spre &#238;nchiriere, 2 camere"}
+    html = f'<script type="application/ld+json">{json.dumps(ld)}</script>'
+    monkeypatch.setattr(http, "_session", OnePage(html))
+    item = Publi24().fetch_detail(RawListing(site="publi24", url="u"))
+    assert item.title == "Închiriez apartament"
+    assert item.description == "Ofer spre închiriere, 2 camere"
