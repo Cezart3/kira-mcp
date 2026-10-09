@@ -35,3 +35,17 @@ jobs:
       - run: uv run pytest -q -m live
         env:
           KIRA_LIVE: "1"
+
+  docker:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build -t kira-mcp .
+      - name: The image answers an MCP handshake over stdio
+        run: |
+          printf '%s\n' \
+            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
+            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
+            | timeout 60 docker run -i --rm kira-mcp > out.jsonl
+          grep -q '"search_rentals"' out.jsonl
