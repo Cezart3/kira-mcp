@@ -48,13 +48,17 @@ PLACES = {
 class FakeGeocoder:
     def __init__(self):
         self.lookups: list[str] = []
+        self.cache: dict[str, tuple[float, float] | None] = {}
 
     def cached(self, query: str, loc: Locality):
-        return False, None
+        q = query.strip().lower()
+        return q in self.cache, self.cache.get(q)
 
     def geocode(self, query: str, loc: Locality):
         self.lookups.append(query)
-        return PLACES.get(query.strip().lower())
+        q = query.strip().lower()
+        self.cache[q] = PLACES.get(q)
+        return self.cache[q]
 
     geocode_place = geocode
 

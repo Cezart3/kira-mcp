@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+from collections import Counter
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
@@ -172,19 +173,26 @@ def _locate(
     items: list[Listing], loc: Locality, origin: tuple[float, float, str], budget: int
 ) -> None:
     """Coordinates for each listing from its street (or else its district), then
-    distance to the origin. Cached places are free; new ones spend the budget."""
+    distance to the origin. Cached places are free; new lookups spend the budget,
+    on the places that cover the most listings first (a district is shared by
+    many ads, a street by few)."""
     gc = geocoder()
+
+    def candidates(li: Listing):
+        return [(q, p) for q, p in ((li.street, "street"), (li.raw.district, "district")) if q]
+
+    wanted: Counter[str] = Counter()
     for li in items:
-        for query, precision in ((li.street, "street"), (li.raw.district, "district")):
-            if not query:
-                continue
-            known, coords = gc.cached(query, loc)
-            if not known:
-                if budget <= 0:
-                    continue
-                budget -= 1
-                coords = gc.geocode(query, loc)
-            if coords:
+        for q, _ in candidates(li):
+            if not gc.cached(q, loc)[0]:
+                wanted[q] += 1
+    for q, _ in wanted.most_common(budget):
+        gc.geocode(q, loc)
+
+    for li in items:
+        for q, precision in candidates(li):
+            known, coords = gc.cached(q, loc)
+            if known and coords:
                 li.coords, li.geo_precision, li.origin = coords, precision, origin
                 li.distance_m = haversine_m(coords[0], coords[1], origin[0], origin[1])
                 break
@@ -196,6 +204,8 @@ def _source_report(results: list[SiteResult]) -> list[dict]:
         d = {"site": r.site, "status": r.status, "fetched": len(r.items), "url": r.url}
         if r.total_available is not None:
             d["total_on_site"] = r.total_available
+        if r.elsewhere:
+            d["skipped_other_localities"] = r.elsewhere
         if r.error:
             d["error"] = r.error
         out.append(d)
@@ -316,24 +326,29 @@ def search_rentals(
             _locate(pool, loc, origin, GEOCODE_BUDGET)
             unlocated = sum(1 for li in pool if li.distance_m is None)
             if max_walk_minutes:
-                before = len(matched)
-                matched = [
-                    li for li in matched
-                    if li.distance_m is not None and walk_minutes(li.distance_m) <= max_walk_minutes
-                ]
+                far = {
+                    id(li) for li in matched
+                    if li.distance_m is not None
+                    and walk_minutes(li.distance_m) > max_walk_minutes
+                }
+                matched = [li for li in matched if id(li) not in far]
                 notes.append(
-                    f"{before - len(matched)} listing(s) dropped by the {max_walk_minutes}-minute "
-                    f"walk limit, {unlocated} of them because their address could not be placed."
+                    f"{len(far)} listing(s) dropped as more than {max_walk_minutes} minutes "
+                    "on foot away."
                 )
-            if sort == "distance":
-                matched.sort(key=lambda li: (li.distance_m is None, li.distance_m or 0))
-            if unlocated and not max_walk_minutes:
+            if sort == "distance" or max_walk_minutes:
+                if sort == "distance":
+                    matched.sort(key=lambda li: li.distance_m or 0)
+                matched.sort(key=lambda li: li.distance_m is None)  # stable: located first
+            if unlocated:
                 notes.append(
-                    f"{unlocated} listing(s) have no street or district to measure from."
+                    f"{unlocated} listing(s) could not be placed (no usable street or "
+                    "district); they come after the located ones, without a distance."
                 )
             notes.append(
-                "Distances are straight-line x1.3 at 4.7 km/h; 'district' precision "
-                "means measured from the neighbourhood centre."
+                "Distances are straight-line x1.3 at 4.7 km/h, from the location the "
+                "poster entered; 'district' precision = measured from the "
+                "neighbourhood centre."
             )
     elif sort == "distance" or max_walk_minutes:
         notes.append("Distance sort/filter needs `near`; ignored.")

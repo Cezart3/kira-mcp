@@ -38,6 +38,10 @@ def _parse_dt(value) -> datetime | None:
     return None
 
 
+# storia's heating enum, in words the extractor knows
+_HEATING_TEXT = {"gas": "centrală proprie", "urban": "termoficare"}
+
+
 class Storia:
     name = "storia"
     hosts = ("storia.ro",)
@@ -94,6 +98,7 @@ class Storia:
             data = next_data(html) if html else None
             if data is None:
                 break
+        res.keep_local(loc)
         return res
 
     def _to_raw(self, it: dict) -> RawListing | None:
@@ -184,6 +189,8 @@ class Storia:
             if isinstance(ch, dict):
                 lk = ch.get("localizedKey") or ch.get("key")
                 lv = ch.get("localizedValue") or ch.get("value")
+                if ch.get("key") == "heating":  # enum, often without a localized label
+                    lv = _HEATING_TEXT.get(str(ch.get("value")), lv)
                 if lk and lv:
                     extras.append(f"{lk}: {lv}")
         if extras:

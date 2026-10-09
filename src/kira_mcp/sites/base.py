@@ -60,6 +60,14 @@ class SiteResult:
     items: list[RawListing] = field(default_factory=list)
     total_available: int | None = None  # how many the site says match, when it says
     error: str = ""
+    elsewhere: int = 0  # ads the site added from neighbouring localities, dropped
+
+    def keep_local(self, loc: Locality) -> None:
+        """Sites pad thin results with nearby places (a Selimbar search shows
+        Sibiu flats). Keep the locality's own ads; ads with no location stay."""
+        kept = [r for r in self.items if not r.location_text or loc.matches(r.location_text)]
+        self.elsewhere += len(self.items) - len(kept)
+        self.items = kept
 
 
 class Site(Protocol):

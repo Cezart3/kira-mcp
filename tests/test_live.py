@@ -17,7 +17,9 @@ def offline():  # override conftest: hit the network
     SITES["storia"]._paths.clear()  # type: ignore[attr-defined]
 
 
-@pytest.mark.parametrize("city", ["Cluj-Napoca", "Bucuresti", "Piatra Neamt", "Floresti"])
+@pytest.mark.parametrize(
+    "city", ["Cluj-Napoca", "Bucuresti", "Timisoara", "Constanta", "Piatra Neamt", "Floresti"]
+)
 def test_every_site_answers(city):
     from kira_mcp.search import search_rentals
 
@@ -36,3 +38,14 @@ def test_detail_pages_parse():
         assert res["results"], site
         d = get_listing(res["results"][0]["url"])
         assert d["title"] and d["description"], (site, d)
+
+
+@pytest.mark.parametrize("town", ["Selimbar", "Popesti-Leordeni", "Sanpetru"])
+def test_small_towns_get_their_own_ads_only(town):
+    from kira_mcp.localities import resolve
+    from kira_mcp.search import search_rentals
+
+    loc = resolve(town)
+    res = search_rentals(town, pages=1, limit=50)
+    assert res["results"], res
+    assert all(loc.matches(r["area"]) for r in res["results"] if r.get("area"))

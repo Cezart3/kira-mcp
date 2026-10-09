@@ -9,7 +9,7 @@ from datetime import datetime
 from kira_mcp.http import session
 from kira_mcp.localities import Locality
 from kira_mcp.sites.base import Filters, RawListing, SiteResult, next_data, status_for
-from kira_mcp.text import strip_html
+from kira_mcp.text import fold, strip_html
 
 BASE = "https://lajumate.ro"
 IMG_BASE = "https://api-preprod.lajumate.ro/opt-image"
@@ -19,6 +19,15 @@ SEARCH_PATH = "/anunturi/imobiliare/apartamente-de-inchiriat/in"
 def _num(v) -> float | None:
     with suppress(TypeError, ValueError):
         return float(str(v).replace(",", "."))
+    return None
+
+
+def _owner(person_type) -> bool | None:
+    pt = fold(str(person_type or ""))
+    if "fizica" in pt:
+        return True
+    if "juridica" in pt or "firma" in pt or "agent" in pt:
+        return False
     return None
 
 
@@ -67,6 +76,7 @@ class Lajumate:
             surface_m2=surface if surface and 10 <= surface <= 400 else None,
             floor=str(floor) if floor not in (None, "") else None,
             posted_at=posted,
+            private_owner=_owner(val("person_type")),
             extra_text="; ".join(
                 f"{f.get('field_key')}: {f.get('value')}" for f in fields.values()
             ),
@@ -95,7 +105,7 @@ class Lajumate:
             if not ads or page >= (pag.get("totalPages") or 1):
                 break
             page += 1
-        res.items = [r for r in res.items if not r.location_text or loc.matches(r.location_text)]
+        res.keep_local(loc)
         return res
 
     def fetch_detail(self, item: RawListing) -> RawListing:
@@ -114,4 +124,8 @@ class Lajumate:
                     item.title = item.title or full.title
                     item.price_value = item.price_value or full.price_value
                     item.price_currency = item.price_currency or full.price_currency
+                    item.rooms = item.rooms or full.rooms
+                    item.surface_m2 = item.surface_m2 or full.surface_m2
+                    if item.private_owner is None:
+                        item.private_owner = full.private_owner
         return item

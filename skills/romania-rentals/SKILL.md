@@ -42,7 +42,10 @@ uvx --from git+https://github.com/Cezart3/kira-mcp kira --json find "Floresti"
    must-haves first and run **one well-filtered search**, not many broad ones.
 2. Heating and parking come from the ad text. When `parking` or `heating` is
    `unknown`, say so — don't guess. `get_listing_details` reads the full ad.
-3. `distance.precision` is `street` or `area`; treat `area` distances as rough.
+3. `distance.precision` is `street` or `district`; treat `district` distances as
+   rough. Listings without a `distance` could not be placed (the ad gives no
+   street or neighbourhood) — they are listed after the located ones; mention
+   them rather than silently dropping them.
 4. Always give the ad link. Contact details are deliberately not returned —
    the user contacts the owner on the site.
 5. OLX and imobiliare.ro are not searched (they block automated access). If

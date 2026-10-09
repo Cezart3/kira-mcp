@@ -16,6 +16,8 @@ def _print_rentals(res: dict) -> None:
     print(f"{loc['name']}, {loc['county']} — {res['matched']} matching, showing {res['returned']}")
     for s in res["sources"]:
         extra = f", {s['total_on_site']} on site" if "total_on_site" in s else ""
+        if s.get("skipped_other_localities"):
+            extra += f", {s['skipped_other_localities']} from nearby places skipped"
         print(f"  {s['site']}: {s['status']} ({s['fetched']} fetched{extra})")
     print()
     for i, r in enumerate(res["results"], 1):

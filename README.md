@@ -8,8 +8,10 @@ duplicates and non-rentals, and reads the ad text for the things the site
 filters don't give you: **heating type, parking, private owner vs agency, and
 walking distance** to a place you care about.
 
-Works with Claude, ChatGPT, Cursor, VS Code, Gemini CLI, Codex and any other
-MCP client.
+Works with Claude (Code & Desktop), Cursor, VS Code, Windsurf, Gemini CLI,
+Codex and any other MCP client. Also usable as a plain CLI.
+
+🇷🇴 [Ghid în română](README.ro.md)
 
 > "Find me a 2-room flat in Cluj under 500 €, own boiler, with parking,
 > max 20 minutes on foot from UMF."
@@ -58,20 +60,37 @@ answer the question you actually asked.
 - **Privacy**: phone numbers and e-mails are redacted from returned text.
   The user contacts the owner on the original site.
 
-## Install
+## Quick start (5 minutes)
 
-You need [uv](https://docs.astral.sh/uv/getting-started/installation/).
-Nothing else — `uvx` fetches and runs it.
+### Step 1 — install uv (once)
 
-**Claude Code**
+kira-mcp runs through [uv](https://docs.astral.sh/uv/), which downloads it
+and its Python on first use. Nothing else to install.
+
+- **Windows** (PowerShell):
+  `powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"`
+- **macOS / Linux**:
+  `curl -LsSf https://astral.sh/uv/install.sh | sh`
+
+Close and reopen the terminal, then check: `uvx --version`.
+
+### Step 2 — connect it to your AI
+
+<details open>
+<summary><b>Claude Code</b></summary>
 
 ```bash
-claude mcp add kira -- uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp
+claude mcp add kira -s user -- uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp
 ```
 
-**Claude Desktop, Cursor, Windsurf, Gemini CLI** — add to the client's MCP
-config (`claude_desktop_config.json`, `~/.cursor/mcp.json`,
-`~/.gemini/settings.json`, ...):
+Check with `claude mcp list` → `kira: ... ✓ Connected`.
+</details>
+
+<details>
+<summary><b>Claude Desktop</b></summary>
+
+1. Settings → Developer → **Edit Config** (opens `claude_desktop_config.json`).
+2. Paste (merge with what is there):
 
 ```json
 {
@@ -84,7 +103,25 @@ config (`claude_desktop_config.json`, `~/.cursor/mcp.json`,
 }
 ```
 
-**VS Code** (`.vscode/mcp.json`):
+3. Quit Claude Desktop completely (tray icon → Quit) and start it again.
+   "kira" appears under the tools/connectors menu.
+
+If it says the server failed, use the full path of uvx as `command`
+(`where uvx` on Windows, `which uvx` on macOS — e.g.
+`C:\Users\you\.local\bin\uvx.exe`).
+</details>
+
+<details>
+<summary><b>Cursor / Windsurf / Gemini CLI</b></summary>
+
+Same JSON as Claude Desktop, in `~/.cursor/mcp.json`,
+`~/.codeium/windsurf/mcp_config.json` or `~/.gemini/settings.json`.
+</details>
+
+<details>
+<summary><b>VS Code (Copilot agent mode)</b></summary>
+
+`.vscode/mcp.json` in your workspace:
 
 ```json
 {
@@ -97,22 +134,48 @@ config (`claude_desktop_config.json`, `~/.cursor/mcp.json`,
   }
 }
 ```
+</details>
 
-**Codex** (`~/.codex/config.toml`):
+<details>
+<summary><b>Codex CLI</b></summary>
+
+`~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.kira]
 command = "uvx"
 args = ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
 ```
+</details>
 
-**Remote / HTTP clients**: `kira-mcp --transport streamable-http --port 8000`
+<details>
+<summary><b>Other / remote clients (HTTP)</b></summary>
+
+```bash
+uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp --transport streamable-http --port 8000
+```
+
 serves MCP at `http://localhost:8000/mcp`.
+</details>
 
-**Agent skill**: [`skills/romania-rentals/SKILL.md`](skills/romania-rentals/SKILL.md)
-teaches agents that support skills (Claude Code, Codex, ...) when and how to
-use it — through the MCP tools, or through the CLI if no MCP server is set up.
-Copy the folder into your skills directory (e.g. `~/.claude/skills/`).
+### Step 3 — ask
+
+Just talk to it, in English or Romanian:
+
+- *"Caută-mi o garsonieră în Sibiu sub 350 €, cu centrală proprie."*
+- *"2-room flat in Timișoara, max 500 €, private owner, sorted by price."*
+- *"Apartamente cu 2 camere în Cluj la max 20 de minute pe jos de UMF."*
+- *"Is parking included in this one? <link>"*
+- *"Loc de parcare de închiriat în Brașov sub 60 €."*
+
+The first call takes a few extra seconds while uv downloads the package.
+
+### No MCP? Use the agent skill or the CLI
+
+- **Agent skill**: copy [`skills/romania-rentals/`](skills/romania-rentals/SKILL.md)
+  into your skills folder (e.g. `~/.claude/skills/`). It teaches the agent
+  when to search and how to read the results, via the MCP tools or the CLI.
+- **CLI**: see [below](#cli).
 
 ## Tools
 
@@ -164,8 +227,9 @@ caches pages for 10 minutes, fetches only what one search needs and returns
 links back to the sites. It is meant for personal flat-hunting, not bulk
 harvesting. Check each site's terms before using it for anything else.
 
-Distances are estimates (straight line × 1.3, walking 4.7 km/h). An ad with
-only a neighbourhood gets an `area`-precision distance.
+Distances are estimates (straight line × 1.3, walking 4.7 km/h). They use the
+location the poster entered; an ad with only a neighbourhood gets a
+`district`-precision distance, an ad with neither is listed without one.
 
 ## Development
 

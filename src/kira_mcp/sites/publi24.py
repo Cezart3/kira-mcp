@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import re
+from contextlib import suppress
 from datetime import date, datetime, timedelta
 from urllib.parse import unquote, urljoin
 
@@ -86,6 +87,30 @@ class Publi24:
             posted_at=parse_date(_text(c.select_one(".article-date"))),
         )
 
+    @staticmethod
+    def _read_attributes(item: RawListing, html: str) -> None:
+        """The ad page's attribute list: 'Incalzire centrala proprie',
+        'Locuri parcare 1', 'Numar camere 2 camere'..."""
+        attrs = [
+            squash_ws(a.get_text(" ", strip=True))
+            for a in BeautifulSoup(html, "html.parser").select(".attribute-item")
+        ]
+        if not attrs:
+            return
+        item.extra_text = (item.extra_text + " | " + "; ".join(attrs)).strip(" |")
+        for a in attrs:
+            f = fold(a)
+            m = re.match(r"locuri parcare (\d+)", f)
+            if m and int(m.group(1)) > 0:
+                item.parking_hint = True
+            m = re.match(r"numar camere (\d+)", f)
+            if m and not item.rooms:
+                item.rooms = int(m.group(1))
+            m = re.match(r"suprafata utila ([\d.]+)", f)
+            if m and not item.surface_m2:
+                with suppress(ValueError):
+                    item.surface_m2 = float(m.group(1))
+
     def search_rentals(self, loc: Locality, filters: Filters, pages: int) -> SiteResult:
         url = f"{BASE}/anunturi/imobiliare/de-inchiriat/apartamente/{loc.publi24_path()}/"
         res = SiteResult(site=self.name, url=url)
@@ -95,14 +120,14 @@ class Publi24:
             return res
         cards = BeautifulSoup(html, "html.parser").select("div.article-item")
         res.items = [r for r in map(self.parse_card, cards) if r]
-        # an unknown locality falls back to a broader listing: keep only this one's ads
-        res.items = [r for r in res.items if not r.location_text or loc.matches(r.location_text)]
+        res.keep_local(loc)
         if not res.items and not cards:
             res.status = "not-found"
         return res
 
     def fetch_detail(self, item: RawListing) -> RawListing:
         html = session().get_text(item.url)
+        self._read_attributes(item, html or "")
         m = _LDJSON_RE.search(html or "")
         if not m:
             return item

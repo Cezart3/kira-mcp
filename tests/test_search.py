@@ -84,9 +84,25 @@ def test_near_sorts_by_walking_distance(offline):
     assert "umf" in [q.lower() for q in gc.lookups]
 
 
-def test_max_walk_drops_far_and_unplaceable():
+def test_max_walk_drops_far_keeps_unplaceable_last():
     res = search.search_rentals("Cluj-Napoca", near="UMF", max_walk_minutes=25)
-    assert res["results"] and all(r["distance"]["walk_minutes"] <= 25 for r in res["results"])
+    located = [r for r in res["results"] if "distance" in r]
+    assert located and all(r["distance"]["walk_minutes"] <= 25 for r in located)
+    seen_unlocated = False
+    for r in res["results"]:
+        seen_unlocated |= "distance" not in r
+        assert not (seen_unlocated and "distance" in r), "located listings come first"
+    res = search.search_rentals("Cluj-Napoca", near="UMF", max_walk_minutes=1)
+    assert all("distance" not in r for r in res["results"])
+    assert any("more than 1 minutes" in n for n in res["notes"])
+
+
+def test_geocode_budget_goes_to_shared_places_first(offline, monkeypatch):
+    _, gc = offline
+    monkeypatch.setattr(search, "GEOCODE_BUDGET", 1)
+    search.search_rentals("Cluj-Napoca", near="UMF", sort="distance")
+    # 'umf' for the origin, then a single lookup for listings
+    assert len(gc.lookups) == 2
 
 
 def test_unknown_near_is_reported():
@@ -128,3 +144,16 @@ def test_publi24_dates():
     assert parse_date("28 decembrie", today).date() == date(2025, 12, 28)
     assert parse_date("12 martie 2024", today).date() == date(2024, 3, 12)
     assert parse_date("", today) is None
+
+
+def test_ads_from_neighbouring_localities_are_skipped():
+    from kira_mcp.localities import resolve
+    from kira_mcp.sites.base import RawListing, SiteResult
+
+    res = SiteResult(site="storia", items=[
+        RawListing(site="storia", url="a", title="", location_text="Hipodrom, Sibiu, Sibiu"),
+        RawListing(site="storia", url="b", title="", location_text="Selimbar, Sibiu"),
+        RawListing(site="storia", url="c", title="", location_text=""),
+    ])
+    res.keep_local(resolve("Selimbar"))
+    assert [r.url for r in res.items] == ["b", "c"] and res.elsewhere == 1

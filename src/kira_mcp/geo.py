@@ -74,8 +74,12 @@ class Geocoder:
         except OSError as e:
             log.debug("geocode cache not saved: %s", e)
 
+    @staticmethod
+    def _key(query: str, loc: Locality) -> str:
+        return f"{' '.join(query.split()).lower()}|{loc.label}"
+
     def cached(self, query: str, loc: Locality) -> tuple[bool, tuple[float, float] | None]:
-        key = f"{query.strip().lower()}|{loc.label}"
+        key = self._key(query, loc)
         if key in self._cache:
             hit = self._cache[key]
             return True, (hit[0], hit[1]) if hit else None
@@ -124,7 +128,7 @@ class Geocoder:
                 log.warning("geocode failed for %r: %s", query, e)
                 return None  # transient: don't cache
             found = (float(data[0]["lat"]), float(data[0]["lon"])) if data else None
-            self._cache[f"{query.strip().lower()}|{loc.label}"] = list(found) if found else None
+            self._cache[self._key(query, loc)] = list(found) if found else None
             self._save()
             return found
 
