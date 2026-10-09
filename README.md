@@ -1,5 +1,7 @@
 # kira-mcp
 
+<!-- mcp-name: io.github.Cezart3/kira-mcp -->
+
 [![ci](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)

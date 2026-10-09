@@ -1,5 +1,5 @@
 [project]
-name = "kira-mcp"
+name = "kira-rentals-mcp"  # "kira-mcp" on PyPI is an unrelated project
 version = "0.1.0"
 description = "Live search of Romanian apartment rentals for AI agents — MCP server + CLI, any city, heating & parking extracted from ad text."
 readme = "README.md"
@@ -27,6 +27,7 @@ Issues = "https://github.com/Cezart3/kira-mcp/issues"
 
 [project.scripts]
 kira-mcp = "kira_mcp.server:main"
+kira-rentals-mcp = "kira_mcp.server:main"  # so `uvx kira-rentals-mcp` works
 kira = "kira_mcp.cli:main"
 
 [dependency-groups]

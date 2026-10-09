@@ -1,0 +1,22 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.Cezart3/kira-mcp",
+  "title": "Kira — Romanian rentals",
+  "description": "Live search of apartment rentals in any Romanian city, town or commune (storia, publi24, lajumate).",
+  "repository": {
+    "url": "https://github.com/Cezart3/kira-mcp",
+    "source": "github"
+  },
+  "websiteUrl": "https://github.com/Cezart3/kira-mcp",
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "kira-rentals-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
