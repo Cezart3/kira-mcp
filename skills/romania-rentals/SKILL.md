@@ -16,10 +16,10 @@ Live search of rental listings in Romania. Covers all 3,100+ localities
 **Otherwise use the CLI** (needs `uv`; no install step):
 
 ```bash
-uvx --from git+https://github.com/Cezart3/kira-mcp kira --json search "Cluj-Napoca" --rooms 2 --max-price 500
-uvx --from git+https://github.com/Cezart3/kira-mcp kira --json listing "<ad url>"
-uvx --from git+https://github.com/Cezart3/kira-mcp kira --json parking "Brasov" --max-price 80
-uvx --from git+https://github.com/Cezart3/kira-mcp kira --json find "Floresti"
+uvx --from kira-rentals-mcp kira --json search "Cluj-Napoca" --rooms 2 --max-price 500
+uvx --from kira-rentals-mcp kira --json listing "<ad url>"
+uvx --from kira-rentals-mcp kira --json parking "Brasov" --max-price 80
+uvx --from kira-rentals-mcp kira --json find "Floresti"
 ```
 
 ## Search options

@@ -3,6 +3,7 @@
 <!-- mcp-name: io.github.Cezart3/kira-mcp -->
 
 [![ci](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/kira-rentals-mcp)](https://pypi.org/project/kira-rentals-mcp/)
 [![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![MCP](https://img.shields.io/badge/MCP-server-8A2BE2)
@@ -89,7 +90,7 @@ Close and reopen the terminal, then check: `uvx --version`.
 <summary><b>Claude Code</b></summary>
 
 ```bash
-claude mcp add kira -s user -- uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp
+claude mcp add kira -s user -- uvx kira-rentals-mcp
 ```
 
 Check with `claude mcp list` → `kira: ... ✓ Connected`.
@@ -106,7 +107,7 @@ Check with `claude mcp list` → `kira: ... ✓ Connected`.
   "mcpServers": {
     "kira": {
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+      "args": ["kira-rentals-mcp"]
     }
   }
 }
@@ -138,7 +139,7 @@ Same JSON as Claude Desktop, in `~/.cursor/mcp.json`,
     "kira": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+      "args": ["kira-rentals-mcp"]
     }
   }
 }
@@ -153,7 +154,7 @@ Same JSON as Claude Desktop, in `~/.cursor/mcp.json`,
 ```toml
 [mcp_servers.kira]
 command = "uvx"
-args = ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+args = ["kira-rentals-mcp"]
 ```
 </details>
 
@@ -161,7 +162,7 @@ args = ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
 <summary><b>Other / remote clients (HTTP)</b></summary>
 
 ```bash
-uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp --transport streamable-http --port 8000
+uvx kira-rentals-mcp --transport streamable-http --port 8000
 ```
 
 serves MCP at `http://localhost:8000/mcp`.
@@ -200,7 +201,7 @@ All tools are read-only. Every result carries the original ad URL.
 ## CLI
 
 ```bash
-uvx --from git+https://github.com/Cezart3/kira-mcp kira search "Cluj-Napoca" --rooms 2 --max-price 500 --near UMF --max-walk 20 --sort distance
+uvx --from kira-rentals-mcp kira search "Cluj-Napoca" --rooms 2 --max-price 500 --near UMF --max-walk 20 --sort distance
 kira search Iasi --heating centrala_proprie --parking included likely_included
 kira listing https://www.storia.ro/ro/oferta/...
 kira parking Brasov --max-price 80

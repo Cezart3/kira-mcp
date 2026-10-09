@@ -59,7 +59,7 @@ Dacă vezi un număr de versiune, e gata.
 #### Claude Code
 
 ```bash
-claude mcp add kira -s user -- uvx --from git+https://github.com/Cezart3/kira-mcp kira-mcp
+claude mcp add kira -s user -- uvx kira-rentals-mcp
 ```
 
 Verifică: `claude mcp list` → trebuie să apară `kira: ... ✓ Connected`.
@@ -75,7 +75,7 @@ Verifică: `claude mcp list` → trebuie să apară `kira: ... ✓ Connected`.
      "mcpServers": {
        "kira": {
          "command": "uvx",
-         "args": ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+         "args": ["kira-rentals-mcp"]
        }
      }
    }
@@ -104,7 +104,7 @@ Fișier `.vscode/mcp.json` în proiect:
     "kira": {
       "type": "stdio",
       "command": "uvx",
-      "args": ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+      "args": ["kira-rentals-mcp"]
     }
   }
 }
@@ -117,7 +117,7 @@ Fișier `.vscode/mcp.json` în proiect:
 ```toml
 [mcp_servers.kira]
 command = "uvx"
-args = ["--from", "git+https://github.com/Cezart3/kira-mcp", "kira-mcp"]
+args = ["kira-rentals-mcp"]
 ```
 
 ### Pasul 3 — întreabă
@@ -130,11 +130,11 @@ secunde în plus (se descarcă pachetul); următoarele durează 2–20 de secund
 ## Fără AI: din terminal
 
 ```bash
-uvx --from git+https://github.com/Cezart3/kira-mcp kira search "Cluj-Napoca" --rooms 2 --max-price 500
-uvx --from git+https://github.com/Cezart3/kira-mcp kira search Iasi --heating centrala_proprie --near "Palas Mall" --sort distance
-uvx --from git+https://github.com/Cezart3/kira-mcp kira listing https://www.storia.ro/ro/oferta/...
-uvx --from git+https://github.com/Cezart3/kira-mcp kira parking Brasov --max-price 80
-uvx --from git+https://github.com/Cezart3/kira-mcp kira find Floresti
+uvx --from kira-rentals-mcp kira search "Cluj-Napoca" --rooms 2 --max-price 500
+uvx --from kira-rentals-mcp kira search Iasi --heating centrala_proprie --near "Palas Mall" --sort distance
+uvx --from kira-rentals-mcp kira listing https://www.storia.ro/ro/oferta/...
+uvx --from kira-rentals-mcp kira parking Brasov --max-price 80
+uvx --from kira-rentals-mcp kira find Floresti
 ```
 
 | Opțiune | Ce înseamnă |
