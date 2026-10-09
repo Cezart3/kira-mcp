@@ -363,6 +363,9 @@ _SALE_AD = re.compile(r"\bde vanzare\b|\bvand\b|\bvindem\b")
 NEGOTIABLE = re.compile(r"\bnegocia")  # \b keeps "nenegociabil" out
 
 
+_RENT_WORDS = re.compile(r"inchiri|\bchiri[ae]\b|\bchiria\w*|/\s*luna\b|pe luna\b")
+
+
 def drop_reason(title: str, full_text: str) -> str | None:
     """Why an ad from a rental feed is not a long-term apartment rental, or None."""
     if looks_like_parking_only(title):
@@ -370,6 +373,9 @@ def drop_reason(title: str, full_text: str) -> str | None:
     if _SALE_AD.search(fold(title)):
         return "sale-ad"
     text = fold(full_text)
+    # a sale ad posted in the rental category: says so in the text, never mentions renting
+    if re.search(r"\bde vanzare\b|\bpret de vanzare\b", text) and not _RENT_WORDS.search(text):
+        return "sale-ad"
     if _SHORT_STAY.search(text) and not _ALSO_LONG_TERM.search(text):
         return "short-stay"
     return None

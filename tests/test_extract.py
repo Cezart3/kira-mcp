@@ -198,6 +198,10 @@ def test_street():
 def test_drop_reason():
     assert drop_reason("Inchiriez loc de parcare", "") == "parking-only"
     assert drop_reason("De vanzare apartament 2 camere", "") == "sale-ad"
+    sale_in_text = "apartament de 2 camere, de vanzare. pret: 74.999€ neg"
+    assert drop_reason("Apartament 2 camere renovat", sale_in_text) == "sale-ad"
+    boilerplate = "chirie 400 eur/luna. avem si apartamente de vanzare"
+    assert drop_reason("Apartament 2 camere", boilerplate) is None
     assert drop_reason("Apartament centru", "regim hotelier, 150 lei pe noapte") == "short-stay"
     assert drop_reason("Apartament 2 camere", "contract minim 1 an") is None
     assert drop_reason("Apartament", "inchiriere zilnica sau saptamanala") == "short-stay"

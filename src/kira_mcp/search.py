@@ -333,6 +333,14 @@ def search_rentals(
     ][:DETAIL_BUDGET]
     if undecided:
         _enrich(undecided, loc)
+        # the full text can reveal what the snippet hid (a sale ad, a hotel-style let)
+        late = set()
+        for li in undecided:
+            reason = ex.drop_reason(li.raw.title, full_text(li.raw))
+            if reason:
+                late.add(id(li))
+                dropped[reason] = dropped.get(reason, 0) + 1
+        basic = [li for li in basic if id(li) not in late]
         notes.append(
             f"Read the full text of {len(undecided)} ad(s) to check heating/parking "
             "(result pages only show a snippet)."

@@ -175,3 +175,16 @@ def test_title_neighbourhood_beats_default_pin():
     assert (pinned.raw.district, pinned.street) == ("Marasti", "")
     assert (right.raw.district, right.street) == ("Zorilor", "Strada Lunii")
     assert bare.raw.district == "Marasti"
+
+
+def test_full_text_can_reveal_a_sale_ad(monkeypatch):
+    from kira_mcp.sites import SITES
+
+    def detail(item):
+        item.description = "Apartament de 2 camere, de vanzare. Pret: 74.999 EUR"
+        return item
+
+    monkeypatch.setattr(SITES["lajumate"], "fetch_detail", detail)
+    res = search.search_rentals("Cluj-Napoca", heating="centrala_proprie", sites=["lajumate"])
+    assert res["results"] == []
+    assert res["dropped_non_rentals"].get("sale-ad") == 1
