@@ -9,7 +9,7 @@ import json
 import re
 from contextlib import suppress
 from datetime import date, datetime, timedelta
-from urllib.parse import unquote, urljoin
+from urllib.parse import unquote_plus, urljoin
 
 from bs4 import BeautifulSoup
 
@@ -73,7 +73,7 @@ class Publi24:
         location = ""
         for p in c.select("p"):
             if p.select_one(_LOCATION_ICON):
-                location = unquote(_text(p))
+                location = unquote_plus(_text(p))
                 break
         return RawListing(
             site=self.name,

@@ -23,7 +23,7 @@ Live search of apartment rentals in Romania, in any city, town or commune
 
 - Prices are monthly rent in EUR (RON converted at ~5 RON/EUR).
 - `heating`: 'centrala_proprie' = own gas boiler (Romanians usually prefer it),
-  'termoficare' = district heating.
+  'termoficare' = district or shared building heating (not the flat's own boiler).
 - `parking` statuses: included, likely_included, area_possible (street/free
   parking nearby, or at extra cost), none, unknown.
 - Every result links to the original ad; contact details are on that page only.
@@ -60,7 +60,7 @@ async def search_rentals(
     max_price: Annotated[float | None, Field(description="Max monthly rent, EUR.")] = None,
     min_price: Annotated[float | None, Field(description="Min monthly rent, EUR.")] = None,
     rooms: Annotated[list[int] | None, Field(description="Room counts; 1 = garsonieră/studio, 4 means 4+. E.g. [2, 3].")] = None,
-    heating: Annotated[Literal["centrala_proprie", "termoficare"] | None, Field(description="centrala_proprie = own gas boiler; termoficare = district heating.")] = None,
+    heating: Annotated[Literal["centrala_proprie", "termoficare"] | None, Field(description="centrala_proprie = own gas boiler; termoficare = district or shared building heating.")] = None,
     parking: Annotated[list[Parking] | None, Field(description="Keep only these parking statuses, e.g. ['included'] or ['included', 'likely_included'].")] = None,
     owner_only: Annotated[bool, Field(description="Only ads posted by private owners (no agency). Only storia reports this; other sites' ads are then excluded.")] = False,
     keywords: Annotated[str | None, Field(description="Words that must all appear in the ad, e.g. 'balcon mobilat' or 'pet'.")] = None,

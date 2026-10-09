@@ -140,7 +140,7 @@ uvx --from git+https://github.com/Cezart3/kira-mcp kira find Floresti
 | `--county` | Județul, când numele e ambiguu (există 6 Florești). Sau direct `"Floresti, Prahova"`. |
 | `--min-price`, `--max-price` | Chiria lunară în **euro** (anunțurile în lei sunt convertite la ~5 lei/€). |
 | `--rooms 1 2` | 1 = garsonieră; 4 = 4 sau mai multe. |
-| `--heating` | `centrala_proprie` sau `termoficare`. |
+| `--heating` | `centrala_proprie` (centrală proprie) sau `termoficare` (termoficare sau centrală de bloc). |
 | `--parking` | `included`, `likely_included`, `area_possible` (în zonă / contra cost), `none`, `unknown`. |
 | `--owner-only` | Doar proprietari (fără comision), unde site-ul precizează. |
 | `--keywords` | Cuvinte care trebuie să apară toate în anunț (`"balcon mobilat"`). |

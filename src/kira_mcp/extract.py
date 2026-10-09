@@ -43,7 +43,8 @@ _TERMOFICARE = re.compile(
     r"centrala (?:termica )?de cartier|punct termic|"
     r"\bradet\b|termoenergetica|\bcolterm\b|\bcet\b|"
     r"(?:incalzire|caldura|agent termic|apa calda)\s+(?:de )?la (?:bloc|oras|retea)|"
-    r"centrala (?:pe|de) (?:bloc|scara)|centrala comuna|\bpe bloc\b"
+    r"centrala (?:termica )?(?:pe |de |a |din |la )?(?:nivel de )?(?:bloc|scara|cladir|imobil)|"
+    r"centrala comuna|\bpe bloc\b"
 )
 _PROPRIE_EXPLICIT = re.compile(
     r"centrala (?:termica )?(?:propri|individual)|ct propri|"

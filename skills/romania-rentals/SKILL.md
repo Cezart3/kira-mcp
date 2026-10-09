@@ -29,7 +29,7 @@ uvx --from git+https://github.com/Cezart3/kira-mcp kira --json find "Floresti"
 | `city` (+ `--county`) | Any Romanian locality. Diacritics optional. Ambiguous names (there are 6 Floreștis) pick the largest unless a county is given: `"Floresti, Prahova"`. |
 | `--min-price` / `--max-price` | Monthly rent in **EUR** (RON ads converted at ~5 RON/EUR). |
 | `--rooms 1 2` | 1 = garsonieră/studio; 4 means 4+. |
-| `--heating` | `centrala_proprie` (own gas boiler) or `termoficare` (district heating). |
+| `--heating` | `centrala_proprie` (own gas boiler) or `termoficare` (district or shared building heating — not the flat's own boiler). |
 | `--parking` | Any of `included`, `likely_included`, `area_possible`, `none`, `unknown`. |
 | `--owner-only` | Private owners only (no agency fee) — only where the site states it. |
 | `--keywords` | Words that must **all** appear in the ad (e.g. `"balcon mobilat"`, `"Zorilor"`). |

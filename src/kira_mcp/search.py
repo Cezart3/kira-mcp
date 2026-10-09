@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import re
 from collections import Counter
 from collections.abc import Iterable
 from concurrent.futures import ThreadPoolExecutor
@@ -20,7 +21,7 @@ log = logging.getLogger(__name__)
 RON_PER_EUR = float(os.environ.get("KIRA_RON_PER_EUR", "5.0"))
 RENT_MIN_EUR = 80       # below: a parking spot or a room-per-night, not a flat
 RENT_MAX_EUR = 15000    # above: a sale price or a parse error
-GEOCODE_BUDGET = 15     # new Nominatim lookups per search (cached ones are free)
+GEOCODE_BUDGET = 20     # new Nominatim lookups per search (cached ones are free)
 DETAIL_BUDGET = 24      # full-ad fetches per search when filtering on heating/parking
 PARKING_STATUSES = {p.value for p in ex.Parking}
 HEATING_VALUES = {ex.Heating.CENTRALA_PROPRIE.value, ex.Heating.TERMOFICARE.value}
@@ -167,6 +168,31 @@ def _enrich(items: list[Listing], loc: Locality) -> None:
 
     with ThreadPoolExecutor(max_workers=len(by_site) or 1) as pool:
         list(pool.map(run, by_site.values()))
+
+
+def _place_by_text(items: list[Listing]) -> None:
+    """Neighbourhood names the sites use for this locality (storia gives one for
+    most ads) are matched against the ads' own words:
+    - an ad pinned to the default spot ('Centru, Piata Unirii') whose title says
+      'Marasti' is moved to Marasti;
+    - an ad with no location data that says 'zona Marasti' gets one."""
+    names = {fold(li.raw.district): li.raw.district for li in items
+             if li.raw.district and len(li.raw.district) >= 4}
+    if not names:
+        return
+    alts = "|".join(re.escape(n) for n in sorted(names, key=len, reverse=True))
+    in_title = re.compile(rf"\b({alts})\b")
+    in_text = re.compile(rf"\b(?:zona|cartier(?:ul)?|in)\s+({alts})\b")
+    for li in items:
+        own = fold(li.raw.district) if li.raw.district else ""
+        hits = [m.group(1) for m in in_title.finditer(fold(li.raw.title))]
+        if not hits and not own:
+            hits = [m.group(1) for m in in_text.finditer(fold(li.raw.description))]
+        if not hits or own in hits:
+            continue
+        li.raw.district = names[hits[0]]
+        if li.street and li.street == li.raw.street:  # the site's pin, as wrong as its district
+            li.street = ""
 
 
 def _locate(
@@ -323,6 +349,7 @@ def search_rentals(
             # distance-sorted / filtered results need every candidate located;
             # otherwise only the ones we will return
             pool = matched if (sort == "distance" or max_walk_minutes) else matched[:limit]
+            _place_by_text(matched)
             _locate(pool, loc, origin, GEOCODE_BUDGET)
             unlocated = sum(1 for li in pool if li.distance_m is None)
             if max_walk_minutes:

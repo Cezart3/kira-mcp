@@ -157,3 +157,21 @@ def test_ads_from_neighbouring_localities_are_skipped():
     ])
     res.keep_local(resolve("Selimbar"))
     assert [r.url for r in res.items] == ["b", "c"] and res.elsewhere == 1
+
+
+def test_title_neighbourhood_beats_default_pin():
+    from kira_mcp.sites.base import RawListing
+
+    def li(title, district="", street="", desc=""):
+        raw = RawListing(site="storia", url=title, title=title, district=district,
+                         street=street, description=desc)
+        return search.normalize(raw)
+
+    pinned = li("Studio bloc nou Marasti", "Centru", "Piata Unirii")
+    right = li("Ap 2 camere Zorilor", "Zorilor", "Strada Lunii")
+    bare = li("Apartament 2 camere", desc="situat in zona Marasti, aproape de piata")
+    others = [li("x", "Marasti"), li("y", "Centru")]
+    search._place_by_text([pinned, right, bare, *others])
+    assert (pinned.raw.district, pinned.street) == ("Marasti", "")
+    assert (right.raw.district, right.street) == ("Zorilor", "Strada Lunii")
+    assert bare.raw.district == "Marasti"

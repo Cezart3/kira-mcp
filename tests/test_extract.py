@@ -114,6 +114,13 @@ def test_heating_pe_bloc():
     assert classify_heating("căldură de la bloc, apă caldă") == Heating.TERMOFICARE
 
 
+def test_heating_building_boiler_is_not_own():
+    for t in ("centrala termica de bloc; repartitoare", "centrala pe bloc cu contorizare",
+              "centrala termica a blocului", "centrala bloc", "centrala la nivel de cladire"):
+        assert classify_heating(t) == Heating.TERMOFICARE, t
+    assert classify_heating("bloc nou, centrala proprie") == Heating.CENTRALA_PROPRIE
+
+
 def test_heating_centralizat():
     assert classify_heating("încălzire centralizată RADET") == Heating.TERMOFICARE
 
