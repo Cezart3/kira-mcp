@@ -171,7 +171,8 @@ def test_title_neighbourhood_beats_default_pin():
     right = li("Ap 2 camere Zorilor", "Zorilor", "Strada Lunii")
     bare = li("Apartament 2 camere", desc="situat in zona Marasti, aproape de piata")
     others = [li("x", "Marasti"), li("y", "Centru")]
-    search._place_by_text([pinned, right, bare, *others])
+    items = [pinned, right, bare, *others]
+    search._place_by_text(items, {li.raw.district for li in items})
     assert (pinned.raw.district, pinned.street) == ("Marasti", "")
     assert (right.raw.district, right.street) == ("Zorilor", "Strada Lunii")
     assert bare.raw.district == "Marasti"

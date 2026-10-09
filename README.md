@@ -7,6 +7,8 @@
 
 **Ask your AI to find you a flat to rent in Romania — any city, town or commune.**
 
+![kira-mcp in Claude Code: a rental search near UMF Cluj](docs/demo.svg)
+
 An [MCP](https://modelcontextprotocol.io) server (and a CLI) that searches
 **storia.ro, publi24.ro and lajumate.ro live**, merges the results, removes
 duplicates and non-rentals, and reads the ad text for the things the site

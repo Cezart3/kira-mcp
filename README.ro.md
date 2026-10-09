@@ -3,6 +3,8 @@
 **Spune-i AI-ului tău ce chirie cauți, oriunde în România. El caută live pe
 storia.ro, publi24.ro și lajumate.ro și îți răspunde cu anunțurile potrivite.**
 
+![kira-mcp în Claude Code](docs/demo.svg)
+
 Exemple de cereri:
 
 - *„Caută-mi o garsonieră în Sibiu sub 350 €, cu centrală proprie.”*

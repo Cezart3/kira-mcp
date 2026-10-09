@@ -74,7 +74,7 @@ class Listing:
                 "walk_minutes": walk_minutes(self.distance_m),
                 "precision": self.geo_precision,
                 "directions": maps_link(
-                    self.coords[0], self.coords[1], self.origin[0], self.origin[1], "transit"
+                    self.coords[0], self.coords[1], self.origin[0], self.origin[1], "walking"
                 ),
             }
         return {k: v for k, v in d.items() if v is not None}
@@ -170,14 +170,14 @@ def _enrich(items: list[Listing], loc: Locality) -> None:
         list(pool.map(run, by_site.values()))
 
 
-def _place_by_text(items: list[Listing]) -> None:
+def _place_by_text(items: list[Listing], known: Iterable[str]) -> None:
     """Neighbourhood names the sites use for this locality (storia gives one for
     most ads) are matched against the ads' own words:
     - an ad pinned to the default spot ('Centru, Piata Unirii') whose title says
       'Marasti' is moved to Marasti;
-    - an ad with no location data that says 'zona Marasti' gets one."""
-    names = {fold(li.raw.district): li.raw.district for li in items
-             if li.raw.district and len(li.raw.district) >= 4}
+    - an ad with no location data that says 'zona Marasti' gets one.
+    `known`: every district seen in this search, before filtering."""
+    names = {fold(d): d for d in known if d and len(d) >= 4}
     if not names:
         return
     alts = "|".join(re.escape(n) for n in sorted(names, key=len, reverse=True))
@@ -357,7 +357,7 @@ def search_rentals(
             # distance-sorted / filtered results need every candidate located;
             # otherwise only the ones we will return
             pool = matched if (sort == "distance" or max_walk_minutes) else matched[:limit]
-            _place_by_text(matched)
+            _place_by_text(matched, {li.raw.district for li in listings})
             _locate(pool, loc, origin, GEOCODE_BUDGET)
             unlocated = sum(1 for li in pool if li.distance_m is None)
             if max_walk_minutes:

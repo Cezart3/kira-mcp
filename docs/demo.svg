@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="470" viewBox="0 0 860 470" font-family="ui-monospace, SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace" font-size="14">
+  <title>kira-mcp demo: an AI agent searching Romanian rentals</title>
+  <style>
+    .l { opacity: 0; animation: show .35s ease-out forwards; }
+    @keyframes show { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .typed { animation: type 2.6s steps(62, end) .3s forwards; }
+    @keyframes type { from { width: 0; } to { width: 760px; } }
+    .cursor { animation: blink 1s step-end 3; }
+    @keyframes blink { 50% { opacity: 0; } }
+    .dim { fill: #8b949e; } .fg { fill: #e6edf3; } .acc { fill: #d2a8ff; } .ok { fill: #3fb950; }
+    .warn { fill: #e3b341; } .link { fill: #58a6ff; } .user { fill: #ffa657; }
+    .b { font-weight: 700; }
+  </style>
+  <rect width="860" height="470" rx="10" fill="#0d1117"/>
+  <rect width="860" height="34" rx="10" fill="#161b22"/>
+  <rect y="24" width="860" height="10" fill="#161b22"/>
+  <circle cx="20" cy="17" r="6" fill="#ff5f57"/><circle cx="40" cy="17" r="6" fill="#febc2e"/><circle cx="60" cy="17" r="6" fill="#28c840"/>
+  <text x="430" y="22" text-anchor="middle" class="dim" font-size="12">claude — kira-mcp</text>
+
+  <!-- prompt, typed -->
+  <clipPath id="typing"><rect class="typed" x="24" y="52" width="0" height="48"/></clipPath>
+  <g clip-path="url(#typing)">
+    <text x="24" y="70" class="user b">&gt; <tspan class="fg" font-weight="400">Find me a studio or 2-room flat in Cluj under 450 €, own boiler,</tspan></text>
+    <text x="24" y="90" class="fg">  max 25 minutes on foot from UMF.</text>
+  </g>
+
+  <g class="l" style="animation-delay:3.2s">
+    <text x="24" y="128" class="acc">● kira · search_rentals</text>
+    <text x="210" y="128" class="dim">(city="Cluj-Napoca", rooms=[1,2], max_price=450,</text>
+    <text x="210" y="146" class="dim"> heating="centrala_proprie", near="UMF", max_walk_minutes=25)</text>
+  </g>
+  <g class="l" style="animation-delay:4.4s">
+    <text x="40" y="172"><tspan class="ok">✓</tspan><tspan class="dim"> storia 73 · publi24 24 · lajumate 56 ads · full text read for 24 · 3 match</tspan></text>
+  </g>
+
+  <g class="l" style="animation-delay:5.6s">
+    <text x="24" y="210" class="fg b">Three options within walking distance of UMF:</text>
+  </g>
+  <g class="l" style="animation-delay:6.3s">
+    <text x="24" y="240" class="fg"><tspan class="b">1. 2 rooms, 45 m², Calea Turzii — 450 €</tspan><tspan class="dim">  · private owner</tspan></text>
+    <text x="44" y="259"><tspan class="ok">own boiler</tspan><tspan class="dim"> · </tspan><tspan class="warn">parking likely included</tspan><tspan class="dim"> · </tspan><tspan class="fg">17 min on foot</tspan></text>
+    <text x="44" y="278" class="link">publi24.ro/…/pf-inchiriez-apartament-2-camere-calea-turzii…</text>
+  </g>
+  <g class="l" style="animation-delay:7.2s">
+    <text x="24" y="308" class="fg"><tspan class="b">2. Studio, 30 m², Zorilor — 400 €</tspan><tspan class="dim">  · agency</tspan></text>
+    <text x="44" y="327"><tspan class="ok">own boiler</tspan><tspan class="dim"> · parking not mentioned · </tspan><tspan class="fg">~19 min (neighbourhood)</tspan></text>
+    <text x="44" y="346" class="link">storia.ro/ro/oferta/1-camera-studio-zorilor-sigma-utcn…</text>
+  </g>
+  <g class="l" style="animation-delay:8.1s">
+    <text x="24" y="376" class="fg"><tspan class="b">3. 2 rooms, 70 m², Gruia — 400 €</tspan><tspan class="dim">  · biggest for the money</tspan></text>
+    <text x="44" y="395"><tspan class="ok">own boiler</tspan><tspan class="dim"> · no street given, so no distance: ask before viewing</tspan></text>
+    <text x="44" y="414" class="link">lajumate.ro/ad/apartament-2-camere-70-mp-semidecomandat-zona-gruia…</text>
+  </g>
+  <g class="l" style="animation-delay:9.2s">
+    <text x="24" y="448" class="dim">OLX and imobiliare.ro block automated access, so check them by hand too.</text>
+  </g>
+</svg>
