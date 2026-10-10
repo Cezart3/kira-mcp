@@ -42,10 +42,14 @@ jobs:
       - uses: actions/checkout@v6
       - run: docker build -t kira-mcp .
       - name: The image answers an MCP handshake over stdio
+        # Keep stdin open until tools/list is answered: on EOF the server exits
+        # and may drop a request it has not handled yet.
         run: |
-          printf '%s\n' \
-            '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
-            '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
-            '{"jsonrpc":"2.0","id":2,"method":"tools/list"}' \
-            | timeout 60 docker run -i --rm kira-mcp > out.jsonl
+          {
+            printf '%s\n' \
+              '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"ci","version":"0"}}}' \
+              '{"jsonrpc":"2.0","method":"notifications/initialized"}' \
+              '{"jsonrpc":"2.0","id":2,"method":"tools/list"}'
+            timeout 50 sh -c 'until grep -q "\"search_rentals\"" out.jsonl 2>/dev/null; do sleep 1; done' || true
+          } | timeout 60 docker run -i --rm kira-mcp > out.jsonl
           grep -q '"search_rentals"' out.jsonl
