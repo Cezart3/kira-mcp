@@ -4,13 +4,13 @@
 
 [![ci](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/Cezart3/kira-mcp/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/kira-rentals-mcp)](https://pypi.org/project/kira-rentals-mcp/)
-[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![MIT](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/Cezart3/kira-mcp/blob/main/LICENSE)
 ![python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![MCP](https://img.shields.io/badge/MCP-server-8A2BE2)
 
 **Ask your AI to find you a flat to rent in Romania — any city, town or commune.**
 
-![kira-mcp in Claude Code: a rental search near UMF Cluj](docs/demo.svg)
+![Demo: asking Claude Code for a flat, kira-mcp searches the sites live](https://raw.githubusercontent.com/Cezart3/kira-mcp/main/docs/demo.svg)
 
 An [MCP](https://modelcontextprotocol.io) server (and a CLI) that searches
 **storia.ro, publi24.ro and lajumate.ro live**, merges the results, removes
@@ -21,7 +21,7 @@ walking distance** to a place you care about.
 Works with Claude (Code & Desktop), Cursor, VS Code, Windsurf, Gemini CLI,
 Codex and any other MCP client. Also usable as a plain CLI.
 
-🇷🇴 [Ghid în română](README.ro.md)
+🇷🇴 [Ghid în română](https://github.com/Cezart3/kira-mcp/blob/main/README.ro.md)
 
 > "Find me a 2-room flat in Cluj under 500 €, own boiler, with parking,
 > max 20 minutes on foot from UMF."
@@ -182,7 +182,7 @@ The first call takes a few extra seconds while uv downloads the package.
 
 ### No MCP? Use the agent skill or the CLI
 
-- **Agent skill**: copy [`skills/romania-rentals/`](skills/romania-rentals/SKILL.md)
+- **Agent skill**: copy [`skills/romania-rentals/`](https://github.com/Cezart3/kira-mcp/blob/main/skills/romania-rentals/SKILL.md)
   into your skills folder (e.g. `~/.claude/skills/`). It teaches the agent
   when to search and how to read the results, via the MCP tools or the CLI.
 - **CLI**: see [below](#cli).
@@ -265,4 +265,4 @@ Site parsers live in `src/kira_mcp/sites/`. Adding a site = one class with
 
 ## License
 
-[MIT](LICENSE) © 2026 Cezar Tocaciu
+[MIT](https://github.com/Cezart3/kira-mcp/blob/main/LICENSE) © 2026 Cezar Tocaciu

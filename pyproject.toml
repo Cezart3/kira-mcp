@@ -1,6 +1,6 @@
 [project]
 name = "kira-rentals-mcp"  # "kira-mcp" on PyPI is an unrelated project
-version = "0.1.0"
+version = "0.1.1"
 description = "Live search of Romanian apartment rentals for AI agents — MCP server + CLI, any city, heating & parking extracted from ad text."
 readme = "README.md"
 license = "MIT"
